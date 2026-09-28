@@ -1,4 +1,5 @@
 {
   "installCommand": "npm install",
-  "buildCommand": "node scripts/copy-frontend.js"
+  "buildCommand": "node scripts/copy-frontend.js",
+  "outputDirectory": "public"
 }

@@ -26,9 +26,11 @@ El pool de MySQL usa 1 conexión para respetar el límite del addon en Clever Cl
 
 Sitio: https://tecnoantioquia.vercel.app
 
-En Vercel, si el **Root Directory** es `frontend` (como en el error anterior), deja el Build Command en:
+En Vercel, si el **Root Directory** es `frontend`:
 
-`node scripts/copy-frontend.js`
+- Build Command: `node scripts/copy-frontend.js`
+- Output Directory: `public`
+- Node.js: 24.x
 
 Variables de entorno:
 
