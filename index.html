@@ -1,0 +1,540 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>TECNOANTIOQUIA</title>
+
+
+    <!-- =========================================
+         BOOTSTRAP
+         ========================================= -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+
+    <!-- =========================================
+         ICONOS BOOTSTRAP
+         ========================================= -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+    <!-- =========================================
+         NUESTRO CSS
+         ========================================= -->
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         1. MENÚ DE NAVEGACIÓN
+         ========================================= -->
+
+    <nav class="navbar navbar-expand-lg sticky-top">
+
+        <div class="container">
+
+
+            <!-- Nombre del negocio -->
+
+            <a class="navbar-brand fw-bold"
+               href="#inicio">
+
+                TECNOANTIOQUIA
+
+            </a>
+
+
+            <!-- Botón del menú en celular -->
+
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#menu"
+                aria-controls="menu"
+                aria-expanded="false"
+                aria-label="Abrir menú">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+
+            <!-- Opciones del menú -->
+
+            <div
+                class="collapse navbar-collapse"
+                id="menu">
+
+                <ul class="navbar-nav ms-auto">
+
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="#inicio">
+
+                            Inicio
+
+                        </a>
+
+                    </li>
+
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="#nosotros">
+
+                            Nosotros
+
+                        </a>
+
+                    </li>
+
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="#servicios">
+
+                            Servicios
+
+                        </a>
+
+                    </li>
+
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="#galeria">
+
+                            Galería
+
+                        </a>
+
+                    </li>
+
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="#contacto">
+
+                            Contacto
+
+                        </a>
+
+                    </li>
+
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =========================================
+         2. BANNER PRINCIPAL
+         
+         IMPORTANTE:
+         El banner está FUERA del menú.
+         ========================================= -->
+
+    <div class="banner-principal">
+
+        <img
+            src="img/Baner-tecnoantioquia.jpg"
+            alt="TECNOANTIOQUIA - Celulares, accesorios y servicio técnico">
+
+    </div>
+
+
+
+    <!-- =========================================
+         3. PORTADA / INICIO
+         ========================================= -->
+
+    <header
+        id="inicio"
+        class="hero">
+
+        <div class="container text-center">
+
+
+            <!-- LOGO -->
+
+            <img
+                src="img/Logo-tecnoantioquia.jpg"
+                alt="Logo de TECNOANTIOQUIA"
+                class="logo-principal">
+
+
+            <!-- Texto de servicios -->
+
+            <p class="badge">
+
+                VENTA DE CELULARES, ACCESORIOS,
+                MANTENIMIENTO DE CELULARES
+                Y EQUIPOS DE CÓMPUTO.
+
+            </p>
+
+
+            <!-- Nombre del negocio -->
+
+            <h1 id="nombreNegocio">
+
+                TECNOANTIOQUIA
+
+            </h1>
+
+
+            <!-- Eslogan -->
+
+            <p
+                id="eslogan"
+                class="lead">
+
+                Venta de celulares, accesorios
+                y servicio técnico.
+
+            </p>
+
+
+            <!-- Botón de WhatsApp -->
+
+            <a
+                id="botonWhatsApp"
+                class="btn btn-warning btn-lg"
+                href="#"
+                target="_blank">
+
+                <i class="bi bi-whatsapp"></i>
+
+                Solicita nuestros servicios
+
+            </a>
+
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================================
+         4. NOSOTROS
+         ========================================= -->
+
+    <section
+        id="nosotros"
+        class="section">
+
+        <div class="container">
+
+
+            <div class="section-title">
+
+                <h2>
+
+                    Nosotros
+
+                </h2>
+
+
+                <p id="descripcion">
+
+                    Descripción del emprendimiento.
+
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         5. SERVICIOS
+         ========================================= -->
+
+    <section
+        id="servicios"
+        class="section servicios">
+
+        <div class="container">
+
+
+            <div class="section-title">
+
+                <h2>
+
+                    Nuestros servicios
+
+                </h2>
+
+
+                <p>
+
+                    Soluciones tecnológicas para
+                    celulares y equipos de cómputo.
+
+                </p>
+
+            </div>
+
+
+            <!--
+                JavaScript generará aquí
+                las tarjetas de servicios.
+            -->
+
+            <div
+                id="listaServicios"
+                class="row g-4">
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         6. GALERÍA
+         ========================================= -->
+
+    <section
+        id="galeria"
+        class="section">
+
+        <div class="container">
+
+
+            <div class="section-title">
+
+                <h2>
+
+                    Galería
+
+                </h2>
+
+            </div>
+
+
+            <div class="row g-4">
+
+
+                <!-- Imagen 1 -->
+
+                <div class="col-md-4">
+
+                    <img
+                        src="img/servicio-1.jpg"
+                        class="img-fluid rounded shadow"
+                        alt="Venta de celulares">
+
+                </div>
+
+
+                <!-- Imagen 2 -->
+
+                <div class="col-md-4">
+
+                    <img
+                        src="img/servicio-2.jpg"
+                        class="img-fluid rounded shadow"
+                        alt="Venta de accesorios">
+
+                </div>
+
+
+                <!-- Imagen 3 -->
+
+                <div class="col-md-4">
+
+                    <img
+                        src="img/servicio-3.jpg"
+                        class="img-fluid rounded shadow"
+                        alt="Mantenimiento de celulares">
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         7. CONTACTO
+         ========================================= -->
+
+    <section
+        id="contacto"
+        class="section contacto">
+
+        <div class="container text-center">
+
+
+            <h2>
+
+                Contáctanos
+
+            </h2>
+
+
+            <!--
+                Estos ID son utilizados
+                por JavaScript.
+            -->
+
+            <p id="direccion"></p>
+
+            <p id="telefono"></p>
+
+            <p id="horario"></p>
+
+
+
+            <!-- =================================
+                 REDES SOCIALES
+                 ================================= -->
+
+            <div class="mt-4">
+
+
+                <!-- Instagram -->
+
+                <a
+                    id="instagram"
+                    class="btn btn-outline-light m-1"
+                    target="_blank"
+                    rel="noopener noreferrer">
+
+                    <i class="bi bi-instagram"></i>
+
+                    Instagram
+
+                </a>
+
+
+                <!-- TikTok -->
+
+                <a
+                    id="tiktok"
+                    class="btn btn-outline-light m-1"
+                    target="_blank"
+                    rel="noopener noreferrer">
+
+                    <i class="bi bi-tiktok"></i>
+
+                    TikTok
+
+                </a>
+
+
+                <!-- Facebook -->
+
+                <a
+                    id="facebook"
+                    class="btn btn-outline-light m-1"
+                    target="_blank"
+                    rel="noopener noreferrer">
+
+                    <i class="bi bi-facebook"></i>
+
+                    Facebook
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================
+         8. PIE DE PÁGINA
+         ========================================= -->
+
+    <footer class="footer text-center">
+
+        <p>
+
+            © 2026 TECNOANTIOQUIA
+
+        </p>
+
+
+        <p>
+
+            Celulares - Accesorios -
+            Mantenimiento y Servicio Técnico
+
+        </p>
+
+    </footer>
+
+
+
+    <!-- =========================================
+         9. BOOTSTRAP JAVASCRIPT
+         ========================================= -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+
+
+    <!-- =========================================
+         10. NUESTRO JAVASCRIPT
+         ========================================= -->
+
+    <script src="js/script.js"></script>
+
+
+</body>
+
+</html>
+```
