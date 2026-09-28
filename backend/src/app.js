@@ -12,7 +12,8 @@ function createApp() {
     cors({
       origin: [
         "http://localhost:3000",
-        "https://tecnoantioquia.vercel.app"
+        "https://tecnoantioquia.vercel.app",
+        /\.vercel\.app$/
       ]
     })
   );

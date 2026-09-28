@@ -1,4 +1,5 @@
 {
-  "version": 2,
-  "buildCommand": "node scripts/copy-frontend.js"
+  "installCommand": "npm install",
+  "buildCommand": "echo skip",
+  "outputDirectory": "frontend"
 }

@@ -26,7 +26,11 @@ El pool de MySQL usa 1 conexión para respetar el límite del addon en Clever Cl
 
 Sitio: https://tecnoantioquia.vercel.app
 
-En el proyecto de Vercel agrega estas variables de entorno y vuelve a desplegar:
+En Vercel, si el **Root Directory** es `frontend` (como en el error anterior), deja el Build Command en:
+
+`node scripts/copy-frontend.js`
+
+Variables de entorno:
 
 - `MYSQL_ADDON_HOST`
 - `MYSQL_ADDON_DB`
