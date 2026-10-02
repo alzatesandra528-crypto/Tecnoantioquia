@@ -42,7 +42,7 @@ async function api(path, options = {}) {
 
     const data = await response.json().catch(() => ({}));
 
-    if (response.status === 401) {
+    if (response.status === 401 && !path.includes("/auth/login")) {
         clearSession();
         window.location.href = "login.html";
         throw new Error(data.error || "Sesión vencida.");

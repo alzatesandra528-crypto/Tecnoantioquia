@@ -47,6 +47,22 @@
     text-decoration: none;
 }
 
+.login-users {
+    margin-top: 24px;
+    padding: 16px;
+    background: #F2F8FC;
+    border-radius: 12px;
+    text-align: left;
+    color: #063B63;
+    font-size: 0.95rem;
+}
+
+.login-users-title {
+    font-weight: 800;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
 .user-badge {
     color: #FFD43B;
     font-weight: 700;
