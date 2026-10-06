@@ -1,5 +1,5 @@
 {
-  "name": "tecnoantioquia-server",
+  "name": "tecnoantioquia-backend",
   "private": true,
   "type": "module",
   "scripts": {
