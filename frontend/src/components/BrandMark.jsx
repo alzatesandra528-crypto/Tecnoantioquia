@@ -1,5 +1,5 @@
-import logoLight from "./assets/logo-mark.svg";
-import logoDark from "./assets/logo-mark-dark.svg";
+import logoLight from "../assets/logo-mark.svg";
+import logoDark from "../assets/logo-mark-dark.svg";
 
 export default function BrandMark({ inverted = false, compact = false }) {
   return (
