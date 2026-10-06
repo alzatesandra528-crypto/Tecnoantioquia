@@ -29,12 +29,11 @@ npm run dev
 - Administrador: `admin` / `admin123` (único que edita productos)
 - Vendedor: `vendedor` / `vendedor123` (consulta y registra ventas)
 
-## Vercel
+En Vercel el **Root Directory** está en `frontend`. Puedes dejarlo así.
 
-Sitio: https://tecnoantioquia.vercel.app
+Si el Install Command está **Override**, cámbialo a:
 
-Variables de entorno:
+`node scripts/vercel-install.cjs`
 
-- `MONGODB_URI`
-- `JWT_SECRET`
+o desactiva el override para que use `vercel.json`.
 

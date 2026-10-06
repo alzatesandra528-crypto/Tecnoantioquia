@@ -1,8 +1,9 @@
 {
-  "buildCommand": "npm run build",
+  "installCommand": "node scripts/vercel-install.cjs",
+  "buildCommand": "node scripts/copy-frontend.js",
   "outputDirectory": "dist",
-  "framework": "vite",
   "rewrites": [
+    { "source": "/api/:path*", "destination": "/api" },
     { "source": "/catalogo/:path*", "destination": "/index.html" },
     { "source": "/admin/:path*", "destination": "/index.html" },
     { "source": "/login", "destination": "/index.html" }

@@ -12,7 +12,13 @@ execSync("npm run build", { cwd: frontend, stdio: "inherit" });
 
 const dist = join(frontend, "dist");
 if (!existsSync(dist)) {
-  throw new Error("No se generó frontend/dist");
+  throw new Error("No se generó la carpeta dist");
+}
+
+const rootDist = join(repo, "dist");
+if (dist !== rootDist) {
+  mkdirSync(rootDist, { recursive: true });
+  cpSync(dist, rootDist, { recursive: true });
 }
 
 mkdirSync(join(repo, "public"), { recursive: true });
