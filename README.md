@@ -1,36 +1,40 @@
 # Tecnoantioquia
 
-Sitio y catálogo: React + Vite + Material UI + Tailwind + PWA, API con MongoDB.
+Tienda PWA (Vite + React) y API con MongoDB.
 
 ## Carpetas
 
-- `frontend/`: tienda, panel y función `/api` de Vercel
-- `backend/`: API local (Express + MongoDB)
+- `frontend/`: React, Vite, PWA y diseño de Figma
+- `backend/`: Express + MongoDB
+- `api/`: función de Vercel (las peticiones `/api` del sitio)
 
-## Cómo ejecutarlo
+No hay `public/` ni `scripts/` en la raíz. El `frontend/public/` es de Vite (favicon).
+
+## Local
 
 ```bash
+cd backend
 npm install
-npm install --prefix backend
-npm install --prefix frontend
+npm run dev
+```
+
+```bash
+cd frontend
+npm install
 npm run dev
 ```
 
 - Tienda: http://localhost:5173
 - API: http://localhost:4000
 
-## Usuarios
-
-- Administrador: `admin` / `admin123`
-- Vendedor: `vendedor` / `vendedor123`
+Usuarios: `admin` / `admin123` y `vendedor` / `vendedor123`
 
 ## Vercel
 
-Usa el mismo dominio: https://tecnoantioquia.vercel.app
+Mismo dominio: https://tecnoantioquia.vercel.app
 
-En el proyecto de Vercel:
+En el proyecto conectado a https://github.com/alzatesandra528-crypto/Tecnoantioquia :
 
-- **Root Directory:** `frontend`
-- Desactiva **Override** en Install, Build y Output
-- Output Directory: `dist`
+- Root Directory: vacío (raíz del repo) **o** `frontend`
+- Apaga Override de Install / Build / Output
 - Variables: `MONGODB_URI` y `JWT_SECRET`
