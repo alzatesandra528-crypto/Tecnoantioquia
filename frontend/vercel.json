@@ -2,6 +2,11 @@
   "installCommand": "npm install && npm install --prefix ../backend",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "../backend/**"
+    }
+  },
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api" },
     { "source": "/catalogo/:path*", "destination": "/index.html" },

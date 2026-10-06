@@ -7,14 +7,23 @@ export async function connectDb() {
   if (mongoose.connection.readyState === 1) {
     return mongoose.connection;
   }
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error("Falta MONGODB_URI en Vercel.");
+  }
   if (!connecting) {
-    const uri = process.env.MONGODB_URI;
-    if (!uri) {
-      throw new Error("Falta MONGODB_URI");
-    }
-    connecting = mongoose.connect(uri, { serverSelectionTimeoutMS: 20000 });
+    connecting = mongoose
+      .connect(uri, { serverSelectionTimeoutMS: 20000 })
+      .catch((error) => {
+        connecting = undefined;
+        throw error;
+      });
   }
   await connecting;
-  await seedIfEmpty();
+  try {
+    await seedIfEmpty();
+  } catch (error) {
+    console.error("No se pudo sembrar el catálogo:", error.message);
+  }
   return mongoose.connection;
 }

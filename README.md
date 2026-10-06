@@ -4,11 +4,8 @@ Tienda PWA (Vite + React) y API con MongoDB.
 
 ## Carpetas
 
-- `frontend/`: React, Vite, PWA y diseño de Figma
+- `frontend/`: tienda, PWA y función `/api` de Vercel
 - `backend/`: Express + MongoDB
-- `api/`: función de Vercel (las peticiones `/api` del sitio)
-
-No hay `public/` ni `scripts/` en la raíz. El `frontend/public/` es de Vite (favicon).
 
 ## Local
 
@@ -33,8 +30,8 @@ Usuarios: `admin` / `admin123` y `vendedor` / `vendedor123`
 
 Mismo dominio: https://tecnoantioquia.vercel.app
 
-En el proyecto conectado a https://github.com/alzatesandra528-crypto/Tecnoantioquia :
+En el proyecto (repo https://github.com/alzatesandra528-crypto/Tecnoantioquia ):
 
-- Root Directory: vacío (raíz del repo) **o** `frontend`
-- Apaga Override de Install / Build / Output
+- **Root Directory:** `frontend`
+- Apaga Override de Install, Build y Output
 - Variables: `MONGODB_URI` y `JWT_SECRET`
