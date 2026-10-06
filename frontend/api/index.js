@@ -4,6 +4,7 @@ import { connectDb } from "../../backend/src/db.js";
 import { Product } from "../../backend/src/models/Product.js";
 import { User } from "../../backend/src/models/User.js";
 import { Sale } from "../../backend/src/models/Sale.js";
+import { Order } from "../../backend/src/models/Order.js";
 import { demoCatalog } from "../../backend/src/seed.js";
 
 function json(res, status, data) {
@@ -106,7 +107,7 @@ export default async function handler(req, res) {
         });
       }
       const body = await readBody(req);
-      const username = String(body.username || "").trim();
+      const username = String(body.username || "").trim().toLowerCase();
       const password = String(body.password || "");
       if (!username || !password) {
         return json(res, 400, { error: "Usuario y contraseña son obligatorios." });
@@ -116,30 +117,116 @@ export default async function handler(req, res) {
         return json(res, 401, { error: "Credenciales incorrectas." });
       }
       const token = jwt.sign(
-        { id: user.id, username: user.username, role: user.role },
+        { id: user.id, username: user.username, role: user.role, name: user.name || "" },
         process.env.JWT_SECRET,
-        { expiresIn: "8h" }
+        { expiresIn: "30d" }
       );
       return json(res, 200, {
         token,
-        user: { id: user.id, username: user.username, role: user.role }
+        user: { id: user.id, username: user.username, role: user.role, name: user.name || "" }
       });
     }
 
-    if (url === "/api/products" && req.method === "GET") {
-      readUser(req);
+    if (req.method === "POST" && url === "/api/auth/register") {
       if (!dbOk) {
         return json(res, 503, {
           error: dbError || "Falta conexión a MongoDB. En Vercel agrega MONGODB_URI y JWT_SECRET."
         });
       }
-      return json(res, 200, await Product.find().sort({ name: 1 }));
+      const body = await readBody(req);
+      const username = String(body.username || "").trim().toLowerCase();
+      const password = String(body.password || "");
+      const name = String(body.name || "").trim();
+      if (!username || !password) {
+        return json(res, 400, { error: "Usuario y contraseña son obligatorios." });
+      }
+      if (password.length < 6) {
+        return json(res, 400, { error: "La contraseña debe tener al menos 6 caracteres." });
+      }
+      try {
+        const created = await User.create({
+          username,
+          name,
+          passwordHash: await bcrypt.hash(password, 10),
+          role: "cliente"
+        });
+        const token = jwt.sign(
+          { id: created.id, username: created.username, role: created.role, name: created.name || "" },
+          process.env.JWT_SECRET,
+          { expiresIn: "30d" }
+        );
+        return json(res, 201, {
+          token,
+          user: { id: created.id, username: created.username, role: created.role, name: created.name || "" }
+        });
+      } catch (error) {
+        if (error.code === 11000) return json(res, 409, { error: "Ese usuario ya existe." });
+        return json(res, 400, { error: "No se pudo crear la cuenta." });
+      }
+    }
+
+    if (url === "/api/users" && req.method === "GET") {
+      const auth = readUser(req);
+      if (auth.role !== "admin") throw Object.assign(new Error("Solo la administradora puede ver el equipo."), { status: 403 });
+      if (!dbOk) {
+        return json(res, 503, { error: dbError || "Falta conexión a MongoDB." });
+      }
+      const users = await User.find({ role: { $in: ["admin", "vendedor"] } })
+        .select("username role name createdAt")
+        .sort({ createdAt: -1 });
+      return json(res, 200, users);
+    }
+
+    if (url === "/api/users" && req.method === "POST") {
+      const auth = readUser(req);
+      if (auth.role !== "admin") throw Object.assign(new Error("Solo la administradora puede crear vendedores."), { status: 403 });
+      const body = await readBody(req);
+      const username = String(body.username || "").trim().toLowerCase();
+      const password = String(body.password || "");
+      const name = String(body.name || "").trim();
+      if (!username || !password) {
+        return json(res, 400, { error: "Usuario y contraseña son obligatorios." });
+      }
+      try {
+        const created = await User.create({
+          username,
+          name,
+          passwordHash: await bcrypt.hash(password, 10),
+          role: "vendedor"
+        });
+        return json(res, 201, { id: created.id, username: created.username, role: created.role, name: created.name });
+      } catch (error) {
+        if (error.code === 11000) return json(res, 409, { error: "Ese usuario ya existe." });
+        return json(res, 400, { error: "No se pudo crear el vendedor." });
+      }
+    }
+
+    if (url === "/api/products" && req.method === "GET") {
+      const auth = readUser(req);
+      if (!dbOk) {
+        return json(res, 503, {
+          error: dbError || "Falta conexión a MongoDB. En Vercel agrega MONGODB_URI y JWT_SECRET."
+        });
+      }
+      const products = await Product.find().sort({ name: 1 });
+      if (auth.role !== "admin") {
+        return json(
+          res,
+          200,
+          products.map((item) => {
+            const data = item.toObject();
+            delete data.cost;
+            return data;
+          })
+        );
+      }
+      return json(res, 200, products);
     }
 
     if (url === "/api/products" && req.method === "POST") {
       const user = readUser(req);
-      if (user.role !== "admin") {
-        return json(res, 403, { error: "Solo el administrador puede modificar el inventario." });
+      if (user.role !== "admin" && user.role !== "vendedor") {
+        return json(res, 403, { error: "No tienes permiso para agregar productos." });
       }
       const product = await Product.create(await readBody(req));
       return json(res, 201, product);
@@ -149,7 +236,7 @@ export default async function handler(req, res) {
     if (productId && req.method === "PUT") {
       const user = readUser(req);
       if (user.role !== "admin") {
-        return json(res, 403, { error: "Solo el administrador puede modificar el inventario." });
+        return json(res, 403, { error: "Solo la administradora puede editar o eliminar productos." });
       }
       const product = await Product.findByIdAndUpdate(productId[1], await readBody(req), {
         new: true,
@@ -162,7 +249,7 @@ export default async function handler(req, res) {
     if (productId && req.method === "DELETE") {
       const user = readUser(req);
       if (user.role !== "admin") {
-        return json(res, 403, { error: "Solo el administrador puede modificar el inventario." });
+        return json(res, 403, { error: "Solo la administradora puede editar o eliminar productos." });
       }
       const product = await Product.findByIdAndDelete(productId[1]);
       if (!product) return json(res, 404, { error: "Producto no encontrado." });
@@ -202,6 +289,33 @@ export default async function handler(req, res) {
         userId: user.id
       });
       return json(res, 201, sale);
+    }
+
+    if (url === "/api/orders" && req.method === "GET") {
+      const auth = readUser(req);
+      const filter = auth.role === "cliente" ? { userId: auth.id } : {};
+      const orders = await Order.find(filter).sort({ createdAt: -1 }).limit(50);
+      return json(res, 200, orders);
+    }
+
+    if (url === "/api/orders" && req.method === "POST") {
+      const auth = readUser(req);
+      const body = await readBody(req);
+      const items = Array.isArray(body.items) ? body.items : [];
+      if (!items.length) return json(res, 400, { error: "El carrito está vacío." });
+      const total = items.reduce((sum, item) => sum + Number(item.unitPrice) * Number(item.quantity), 0);
+      const order = await Order.create({
+        userId: auth.id,
+        items: items.map((item) => ({
+          productId: item.productId,
+          name: item.name,
+          quantity: Number(item.quantity),
+          unitPrice: Number(item.unitPrice)
+        })),
+        total,
+        note: String(body.note || "")
+      });
+      return json(res, 201, order);
     }
 
     return json(res, 404, { error: "Ruta no encontrada." });

@@ -24,16 +24,7 @@ npm run dev
 - Tienda: http://localhost:5173
 - API: http://localhost:4000
 
-Usuarios: `admin` / `admin123` y `vendedor` / `vendedor123`
-
-## Cómo agregar productos (administradora)
-
-1. Entra a https://tecnoantioquia.vercel.app/login
-2. Usuario `admin` y contraseña `admin123`
-3. Pulsa **Nuevo producto**
-4. Completa nombre, SKU, **precio de compra**, **precio de venta** y stock
-5. La **ganancia** se calcula sola (venta − compra)
-6. Activa “Visible en la tienda” y guarda
+Usuarios de equipo (no se muestran en la web). El cliente crea su cuenta en /registro.
 
 ## Vercel
 

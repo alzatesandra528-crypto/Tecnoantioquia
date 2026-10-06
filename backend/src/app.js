@@ -5,8 +5,21 @@ import jwt from "jsonwebtoken";
 import { User } from "./models/User.js";
 import { Product } from "./models/Product.js";
 import { Sale } from "./models/Sale.js";
-import { authRequired, adminOnly } from "./middleware/auth.js";
+import { Order } from "./models/Order.js";
+import { authRequired, adminOnly, staffOnly } from "./middleware/auth.js";
 import { connectDb } from "./db.js";
+
+function tokenFor(user) {
+  return jwt.sign(
+    { id: user.id, username: user.username, role: user.role, name: user.name || "" },
+    process.env.JWT_SECRET,
+    { expiresIn: "30d" }
+  );
+}
+
+function publicUser(user) {
+  return { id: user.id, username: user.username, role: user.role, name: user.name || "" };
+}
 
 export function createApp() {
   const app = express();
@@ -36,7 +49,7 @@ export function createApp() {
   });
 
   app.post("/api/auth/login", async (req, res) => {
-    const username = String(req.body.username || "").trim();
+    const username = String(req.body.username || "").trim().toLowerCase();
     const password = String(req.body.password || "");
     if (!username || !password) {
       return res.status(400).json({ error: "Usuario y contraseña son obligatorios." });
@@ -47,16 +60,64 @@ export function createApp() {
       return res.status(401).json({ error: "Credenciales incorrectas." });
     }
 
-    const token = jwt.sign(
-      { id: user.id, username: user.username, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "8h" }
-    );
+    const token = tokenFor(user);
+    res.json({ token, user: publicUser(user) });
+  });
 
-    res.json({
-      token,
-      user: { id: user.id, username: user.username, role: user.role }
-    });
+  app.post("/api/auth/register", async (req, res) => {
+    const username = String(req.body.username || "").trim().toLowerCase();
+    const password = String(req.body.password || "");
+    const name = String(req.body.name || "").trim();
+    if (!username || !password) {
+      return res.status(400).json({ error: "Usuario y contraseña son obligatorios." });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ error: "La contraseña debe tener al menos 6 caracteres." });
+    }
+    try {
+      const user = await User.create({
+        username,
+        name,
+        passwordHash: await bcrypt.hash(password, 10),
+        role: "cliente"
+      });
+      res.status(201).json({ token: tokenFor(user), user: publicUser(user) });
+    } catch (error) {
+      if (error.code === 11000) {
+        return res.status(409).json({ error: "Ese usuario ya existe." });
+      }
+      res.status(400).json({ error: "No se pudo crear la cuenta." });
+    }
+  });
+
+  app.get("/api/users", authRequired, adminOnly, async (_req, res) => {
+    const users = await User.find({ role: { $in: ["admin", "vendedor"] } })
+      .select("username role name createdAt")
+      .sort({ createdAt: -1 });
+    res.json(users);
+  });
+
+  app.post("/api/users", authRequired, adminOnly, async (req, res) => {
+    const username = String(req.body.username || "").trim().toLowerCase();
+    const password = String(req.body.password || "");
+    const name = String(req.body.name || "").trim();
+    if (!username || !password) {
+      return res.status(400).json({ error: "Usuario y contraseña son obligatorios." });
+    }
+    try {
+      const user = await User.create({
+        username,
+        name,
+        passwordHash: await bcrypt.hash(password, 10),
+        role: "vendedor"
+      });
+      res.status(201).json({ id: user.id, username: user.username, role: user.role, name: user.name });
+    } catch (error) {
+      if (error.code === 11000) {
+        return res.status(409).json({ error: "Ese usuario ya existe." });
+      }
+      res.status(400).json({ error: "No se pudo crear el vendedor." });
+    }
   });
 
   app.get("/api/catalog", async (_req, res) => {
@@ -72,13 +133,23 @@ export function createApp() {
     res.json(product);
   });
 
-  app.get("/api/products", authRequired, async (_req, res) => {
-    res.json(await Product.find().sort({ name: 1 }));
+  app.get("/api/products", authRequired, async (req, res) => {
+    const products = await Product.find().sort({ name: 1 });
+    if (req.user.role !== "admin") {
+      return res.json(products.map((item) => {
+        const data = item.toObject();
+        delete data.cost;
+        return data;
+      }));
+    }
+    res.json(products);
   });
 
-  app.post("/api/products", authRequired, adminOnly, async (req, res) => {
+  app.post("/api/products", authRequired, staffOnly, async (req, res) => {
     try {
-      const product = await Product.create(req.body);
+      const payload = { ...req.body };
+      if (req.user.role !== "admin") delete payload.cost;
+      const product = await Product.create(payload);
       res.status(201).json(product);
     } catch (error) {
       if (error.code === 11000) {
@@ -147,6 +218,32 @@ export function createApp() {
     });
 
     res.status(201).json(sale);
+  });
+
+  app.get("/api/orders", authRequired, async (req, res) => {
+    const filter = req.user.role === "cliente" ? { userId: req.user.id } : {};
+    const orders = await Order.find(filter).sort({ createdAt: -1 }).limit(50);
+    res.json(orders);
+  });
+
+  app.post("/api/orders", authRequired, async (req, res) => {
+    const items = Array.isArray(req.body.items) ? req.body.items : [];
+    if (!items.length) {
+      return res.status(400).json({ error: "El carrito está vacío." });
+    }
+    const total = items.reduce((sum, item) => sum + Number(item.unitPrice) * Number(item.quantity), 0);
+    const order = await Order.create({
+      userId: req.user.id,
+      items: items.map((item) => ({
+        productId: item.productId,
+        name: item.name,
+        quantity: Number(item.quantity),
+        unitPrice: Number(item.unitPrice)
+      })),
+      total,
+      note: String(req.body.note || "")
+    });
+    res.status(201).json(order);
   });
 
   app.use((err, _req, res, _next) => {

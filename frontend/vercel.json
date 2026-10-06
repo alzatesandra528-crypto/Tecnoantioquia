@@ -12,6 +12,9 @@
     { "source": "/api/:path*", "destination": "/api" },
     { "source": "/catalogo/:path*", "destination": "/index.html" },
     { "source": "/admin/:path*", "destination": "/index.html" },
-    { "source": "/login", "destination": "/index.html" }
+    { "source": "/login", "destination": "/index.html" },
+    { "source": "/registro", "destination": "/index.html" },
+    { "source": "/carrito", "destination": "/index.html" },
+    { "source": "/cuenta", "destination": "/index.html" }
   ]
 }

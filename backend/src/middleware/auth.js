@@ -16,7 +16,14 @@ export function authRequired(req, res, next) {
 
 export function adminOnly(req, res, next) {
   if (req.user?.role !== "admin") {
-    return res.status(403).json({ error: "Solo el administrador puede modificar el inventario." });
+    return res.status(403).json({ error: "Solo la administradora puede hacer esta acción." });
+  }
+  return next();
+}
+
+export function staffOnly(req, res, next) {
+  if (req.user?.role !== "admin" && req.user?.role !== "vendedor") {
+    return res.status(403).json({ error: "No tienes permiso para esta acción." });
   }
   return next();
 }

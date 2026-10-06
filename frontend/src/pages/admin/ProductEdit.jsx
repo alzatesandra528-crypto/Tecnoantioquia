@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Alert, Button, Switch, TextField } from "@mui/material";
-import { api, money, profitOf } from "../../api.js";
+import { api, getUser, money, profitOf } from "../../api.js";
 
 const empty = {
   name: "",
@@ -22,6 +22,7 @@ export default function ProductEdit() {
   const [form, setForm] = useState(empty);
   const [message, setMessage] = useState("");
   const profit = profitOf(form);
+  const isAdmin = getUser()?.role === "admin";
 
   useEffect(() => {
     if (!isNew) {
@@ -68,6 +69,15 @@ export default function ProductEdit() {
           <Button variant="contained" onClick={save}>
             Guardar
           </Button>
+          {isAdmin && !isNew && (
+            <Button color="error" onClick={async () => {
+              if (!window.confirm("¿Eliminar este producto?")) return;
+              await api(`/api/products/${id}`, { method: "DELETE" });
+              navigate("/admin");
+            }}>
+              Eliminar
+            </Button>
+          )}
         </div>
       </div>
       {message && <Alert severity="error" className="mb-4">{message}</Alert>}
@@ -90,13 +100,15 @@ export default function ProductEdit() {
           </section>
           <section className="bg-white rounded-2xl p-6 grid md:grid-cols-2 gap-4">
             <h2 className="font-extrabold md:col-span-2">Precios y ganancia</h2>
-            <TextField
-              label="Precio de compra (COP)"
-              type="number"
-              value={form.cost}
-              onChange={(e) => setField("cost", e.target.value)}
-              helperText="Lo que te costó el producto"
-            />
+            {isAdmin && (
+              <TextField
+                label="Precio de compra (COP)"
+                type="number"
+                value={form.cost}
+                onChange={(e) => setField("cost", e.target.value)}
+                helperText="Lo que te costó el producto"
+              />
+            )}
             <TextField
               label="Precio de venta (COP)"
               type="number"
@@ -105,11 +117,13 @@ export default function ProductEdit() {
               helperText="Lo que verá el cliente en la tienda"
             />
             <TextField label="Stock total" type="number" value={form.stock} onChange={(e) => setField("stock", e.target.value)} />
-            <div className="rounded-xl bg-[#e8f6f0] p-4">
-              <p className="text-xs text-[#177c62] font-semibold">Ganancia por unidad</p>
-              <p className="text-2xl font-extrabold text-[#177c62]">{money.format(profit.amount)}</p>
-              <p className="text-sm text-mute">{profit.percent.toFixed(0)}% sobre el precio de venta</p>
-            </div>
+            {isAdmin && (
+              <div className="rounded-xl bg-[#e8f6f0] p-4">
+                <p className="text-xs text-[#177c62] font-semibold">Ganancia por unidad</p>
+                <p className="text-2xl font-extrabold text-[#177c62]">{money.format(profit.amount)}</p>
+                <p className="text-sm text-mute">{profit.percent.toFixed(0)}% sobre el precio de venta</p>
+              </div>
+            )}
           </section>
         </div>
         <aside className="grid gap-6">

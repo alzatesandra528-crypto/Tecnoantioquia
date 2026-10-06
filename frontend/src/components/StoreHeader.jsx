@@ -2,6 +2,8 @@ import { Link, NavLink } from "react-router-dom";
 import ChatBubbleOutlined from "@mui/icons-material/ChatBubbleOutlined";
 import BrandMark from "./BrandMark.jsx";
 import { WHATSAPP_DISPLAY, WHATSAPP_LINK } from "../store.js";
+import { homeFor, useAuth } from "../auth.jsx";
+import { useCart } from "../cart.jsx";
 
 const links = [
   { to: "/", label: "Inicio", end: true },
@@ -12,6 +14,9 @@ const links = [
 ];
 
 export default function StoreHeader() {
+  const auth = useAuth();
+  const cart = useCart();
+
   return (
     <header>
       <div className="bg-night h-8 px-6 lg:px-[72px] flex items-center justify-between text-[11px]">
@@ -43,9 +48,23 @@ export default function StoreHeader() {
           )}
         </nav>
         <div className="flex items-center gap-3">
-          <Link to="/login" className="hidden sm:inline text-xs font-semibold text-mute no-underline">
-            Inventario
+          <Link to="/carrito" className="text-xs font-semibold text-ink no-underline">
+            Carrito ({cart.count})
           </Link>
+          {auth.isLoggedIn ? (
+            <Link to={homeFor(auth.user.role)} className="text-xs font-semibold text-mute no-underline">
+              {auth.user.role === "cliente" ? "Mi cuenta" : "Panel"}
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" className="text-xs font-semibold text-mute no-underline">
+                Entrar
+              </Link>
+              <Link to="/registro" className="hidden sm:inline text-xs font-semibold text-connect no-underline">
+                Crear cuenta
+              </Link>
+            </>
+          )}
           <a
             href={WHATSAPP_LINK}
             className="inline-flex h-[38px] items-center gap-2.5 rounded-lg bg-connect px-3.5 text-xs font-semibold text-white no-underline"

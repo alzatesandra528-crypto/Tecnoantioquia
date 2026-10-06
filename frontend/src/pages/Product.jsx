@@ -5,6 +5,7 @@ import StoreHeader from "../components/StoreHeader.jsx";
 import StoreFooter from "../components/StoreFooter.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 import { api, money } from "../api.js";
+import { useCart } from "../cart.jsx";
 import { WHATSAPP_DISPLAY, isAvailable, productSubtitle, whatsappHref } from "../store.js";
 import { productImages } from "../catalogImages.js";
 
@@ -16,6 +17,7 @@ export default function Product() {
   const [qty, setQty] = useState(1);
   const [variantIndex, setVariantIndex] = useState(0);
   const [tab, setTab] = useState("descripcion");
+  const cart = useCart();
 
   useEffect(() => {
     api(`/api/catalog/${id}`)
@@ -147,12 +149,19 @@ export default function Product() {
               <p className="mt-2">{message}</p>
               <p className="text-xs text-mute mt-2">Destino: {WHATSAPP_DISPLAY} · Sin pago en línea</p>
             </div>
+            <button
+              type="button"
+              onClick={() => cart.add(product, qty)}
+              className="mt-4 h-12 rounded-lg bg-connect text-white font-semibold w-full"
+            >
+              Agregar al carrito
+            </button>
             <a
               href={whatsappHref(message)}
-              className="mt-4 h-12 rounded-lg bg-connect text-white font-semibold flex items-center justify-center gap-2 no-underline"
+              className="mt-3 h-12 rounded-lg border border-[#e3e6f0] text-ink font-semibold flex items-center justify-center gap-2 no-underline"
             >
               <ChatBubbleOutlined sx={{ fontSize: 20 }} />
-              Comprar por WhatsApp
+              Consultar por WhatsApp
             </a>
             <p className="text-[11px] text-mute mt-3">
               Confirma disponibilidad y condiciones antes de comprar. Puedes consultar opciones de financiación sujetas a requisitos y aprobación.

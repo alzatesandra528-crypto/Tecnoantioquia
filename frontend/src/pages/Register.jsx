@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Alert, Button, TextField } from "@mui/material";
 import BrandMark from "../components/BrandMark.jsx";
 import { api } from "../api.js";
 import { homeFor, useAuth } from "../auth.jsx";
 
-export default function Login() {
+export default function Register() {
   const navigate = useNavigate();
   const auth = useAuth();
   const [error, setError] = useState("");
@@ -21,15 +21,16 @@ export default function Login() {
     setError("");
     const form = new FormData(event.currentTarget);
     try {
-      const data = await api("/api/auth/login", {
+      const data = await api("/api/auth/register", {
         method: "POST",
         body: JSON.stringify({
+          name: form.get("name"),
           username: form.get("username"),
           password: form.get("password")
         })
       });
       auth.login(data.token, data.user);
-      navigate(homeFor(data.user.role), { replace: true });
+      navigate("/cuenta", { replace: true });
     } catch (err) {
       setError(err.message);
     }
@@ -39,19 +40,19 @@ export default function Login() {
     <main className="min-h-screen bg-night flex items-center justify-center p-6">
       <form onSubmit={onSubmit} className="bg-white rounded-3xl p-8 w-full max-w-md">
         <BrandMark />
-        <h1 className="text-2xl font-extrabold mt-6">Iniciar sesión</h1>
-        <p className="text-mute mb-6">Clientes, vendedores y administración.</p>
+        <h1 className="text-2xl font-extrabold mt-6">Crear cuenta</h1>
+        <p className="text-mute mb-6">Guarda tu carrito, pedidos e historial de compras.</p>
         <div className="grid gap-4">
+          <TextField name="name" label="Nombre" fullWidth />
           <TextField name="username" label="Usuario" autoComplete="username" fullWidth required />
-          <TextField name="password" label="Contraseña" type="password" autoComplete="current-password" fullWidth required />
+          <TextField name="password" label="Contraseña" type="password" autoComplete="new-password" fullWidth required />
           {error && <Alert severity="error">{error}</Alert>}
-          <Button type="submit" variant="contained" size="large">Ingresar</Button>
+          <Button type="submit" variant="contained" size="large">Registrarme</Button>
         </div>
         <p className="text-sm text-mute mt-6">
-          ¿Aún no tienes cuenta?{" "}
-          <Link to="/registro" className="text-connect font-semibold">Crear cuenta</Link>
+          ¿Ya tienes cuenta?{" "}
+          <Link to="/login" className="text-connect font-semibold">Iniciar sesión</Link>
         </p>
-        <Link to="/" className="block mt-4 text-connect font-semibold">Volver al sitio</Link>
       </form>
     </main>
   );
