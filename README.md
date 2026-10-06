@@ -2,6 +2,11 @@
 
 Sitio y catálogo rediseñados con la identidad de Figma: React + Vite + Material UI + Tailwind + PWA, y MongoDB.
 
+## Carpetas
+
+- `client/`: tienda y panel (React, Vite, Material UI, Tailwind, PWA)
+- `server/`: API (Express + MongoDB)
+
 ## Cómo ejecutarlo
 
 1. Instala [MongoDB Community](https://www.mongodb.com/try/download/community) o usa Atlas.
