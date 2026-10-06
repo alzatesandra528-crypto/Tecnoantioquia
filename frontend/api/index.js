@@ -282,8 +282,53 @@ export default async function handler(req, res) {
       if (user.role !== "admin" && user.role !== "vendedor") {
         return json(res, 403, { error: "No tienes permiso para agregar productos." });
       }
-      const product = await Product.create(await readBody(req));
-      return json(res, 201, product);
+      const payload = await readBody(req);
+      if (user.role !== "admin") delete payload.cost;
+      payload.sku = String(payload.sku || "").trim();
+      payload.category = String(payload.category || "").trim();
+      if (!payload.sku || !payload.category || !payload.name) {
+        return json(res, 400, { error: "Nombre, categoría y referencia son obligatorios." });
+      }
+      const existing = await Product.findOne({
+        sku: { $regex: `^${payload.sku.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" }
+      });
+      if (existing) {
+        return json(res, 409, {
+          error: `La referencia ${existing.sku} ya existe en “${existing.name}”. Agrégala a ese producto.`,
+          existing: {
+            id: existing.id,
+            _id: existing._id,
+            name: existing.name,
+            sku: existing.sku,
+            stock: existing.stock
+          }
+        });
+      }
+      try {
+        const product = await Product.create(payload);
+        return json(res, 201, product);
+      } catch (error) {
+        if (error.code === 11000) return json(res, 409, { error: "Ya existe un producto con ese SKU." });
+        return json(res, 400, { error: "No se pudo crear el producto." });
+      }
+    }
+
+    const stockAdd = url.match(/^\/api\/products\/([^/]+)\/stock$/);
+    if (stockAdd && req.method === "POST") {
+      const user = readUser(req);
+      if (user.role !== "admin" && user.role !== "vendedor") {
+        return json(res, 403, { error: "No tienes permiso para esta acción." });
+      }
+      const body = await readBody(req);
+      const add = Number(body.add);
+      if (!Number.isFinite(add) || add < 1) {
+        return json(res, 400, { error: "Indica una cantidad válida para sumar al stock." });
+      }
+      const product = await Product.findById(stockAdd[1]);
+      if (!product) return json(res, 404, { error: "Producto no encontrado." });
+      product.stock += add;
+      await product.save();
+      return json(res, 200, product);
     }
 
     const productId = url.match(/^\/api\/products\/([^/]+)$/);

@@ -28,7 +28,12 @@ export async function api(path, options = {}) {
   const response = await fetch(path, { ...options, headers });
   if (response.status === 204) return null;
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || "Error de comunicación con el servidor.");
+  if (!response.ok) {
+    const error = new Error(data.error || "Error de comunicación con el servidor.");
+    error.status = response.status;
+    error.payload = data;
+    throw error;
+  }
   return data;
 }
 

@@ -8,8 +8,6 @@ import ProductCard from "../components/ProductCard.jsx";
 import { api } from "../api.js";
 import { whatsappHref } from "../store.js";
 
-const chips = ["Todas", "Celulares", "Audio", "Accesorios", "Relojes", "Variedades"];
-
 export default function Catalog() {
   const [params, setParams] = useSearchParams();
   const [products, setProducts] = useState([]);
@@ -23,6 +21,11 @@ export default function Catalog() {
   useEffect(() => {
     api("/api/catalog").then(setProducts).catch(() => setProducts([]));
   }, []);
+
+  const chips = useMemo(() => {
+    const names = [...new Set(products.map((item) => item.category).filter(Boolean))];
+    return ["Todas", ...names.sort((a, b) => a.localeCompare(b, "es"))];
+  }, [products]);
 
   const counts = useMemo(() => {
     const next = { Todas: products.length };

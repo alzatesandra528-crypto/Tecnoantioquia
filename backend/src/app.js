@@ -197,6 +197,26 @@ export function createApp() {
     try {
       const payload = { ...req.body };
       if (req.user.role !== "admin") delete payload.cost;
+      payload.sku = String(payload.sku || "").trim();
+      payload.category = String(payload.category || "").trim();
+      if (!payload.sku || !payload.category || !payload.name) {
+        return res.status(400).json({ error: "Nombre, categoría y referencia son obligatorios." });
+      }
+      const existing = await Product.findOne({
+        sku: { $regex: `^${payload.sku.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" }
+      });
+      if (existing) {
+        return res.status(409).json({
+          error: `La referencia ${existing.sku} ya existe en “${existing.name}”. Agrégala a ese producto.`,
+          existing: {
+            id: existing.id,
+            _id: existing._id,
+            name: existing.name,
+            sku: existing.sku,
+            stock: existing.stock
+          }
+        });
+      }
       const product = await Product.create(payload);
       res.status(201).json(product);
     } catch (error) {
@@ -205,6 +225,18 @@ export function createApp() {
       }
       res.status(400).json({ error: "No se pudo crear el producto." });
     }
+  });
+
+  app.post("/api/products/:id/stock", authRequired, staffOnly, async (req, res) => {
+    const add = Number(req.body.add);
+    if (!Number.isFinite(add) || add < 1) {
+      return res.status(400).json({ error: "Indica una cantidad válida para sumar al stock." });
+    }
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ error: "Producto no encontrado." });
+    product.stock += add;
+    await product.save();
+    res.json(product);
   });
 
   app.put("/api/products/:id", authRequired, adminOnly, async (req, res) => {
