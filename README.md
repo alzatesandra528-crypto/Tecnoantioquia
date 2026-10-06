@@ -1,18 +1,13 @@
 # Tecnoantioquia
 
-Sitio y catálogo rediseñados con la identidad de Figma: React + Vite + Material UI + Tailwind + PWA, y MongoDB.
+Sitio y catálogo: React + Vite + Material UI + Tailwind + PWA, API con MongoDB.
 
 ## Carpetas
 
-- `frontend/`: tienda y panel (React, Vite, Material UI, Tailwind, PWA)
-- `backend/`: API (Express + MongoDB)
-- `api/`: función de Vercel que conecta la API al mismo dominio
+- `frontend/`: tienda, panel y función `/api` de Vercel
+- `backend/`: API local (Express + MongoDB)
 
 ## Cómo ejecutarlo
-
-1. Instala [MongoDB Community](https://www.mongodb.com/try/download/community) o usa Atlas.
-2. En `backend/.env` deja `MONGODB_URI` apuntando a tu cluster.
-3. En la raíz:
 
 ```bash
 npm install
@@ -26,14 +21,16 @@ npm run dev
 
 ## Usuarios
 
-- Administrador: `admin` / `admin123` (único que edita productos)
-- Vendedor: `vendedor` / `vendedor123` (consulta y registra ventas)
+- Administrador: `admin` / `admin123`
+- Vendedor: `vendedor` / `vendedor123`
 
-En Vercel el **Root Directory** está en `frontend`. Puedes dejarlo así.
+## Vercel
 
-Si el Install Command está **Override**, cámbialo a:
+Usa el mismo dominio: https://tecnoantioquia.vercel.app
 
-`node scripts/vercel-install.cjs`
+En el proyecto de Vercel:
 
-o desactiva el override para que use `vercel.json`.
-
+- **Root Directory:** `frontend`
+- Desactiva **Override** en Install, Build y Output
+- Output Directory: `dist`
+- Variables: `MONGODB_URI` y `JWT_SECRET`
