@@ -61,22 +61,22 @@ export default function Home() {
       <StoreHeader />
       <main id="contenido">
         <section className="bg-night" aria-labelledby="hero-title">
-          <div className="px-6 lg:px-[72px] py-16 grid lg:grid-cols-[590px_1fr] gap-9 items-center">
+          <div className="px-4 sm:px-6 lg:px-[72px] py-10 sm:py-16 grid lg:grid-cols-[590px_1fr] gap-9 items-center">
             <div>
               <p className="text-signal text-xs tracking-wide font-semibold">{site.hero.kicker}</p>
-              <Title id="hero-title" text={site.hero.title} className="text-white font-extrabold text-[44px] md:text-[68px] leading-[1.02] mt-6" />
+              <Title id="hero-title" text={site.hero.title} className="text-white font-extrabold text-[36px] sm:text-[44px] lg:text-[68px] leading-[1.05] mt-6" />
               <p className="text-mist text-lg mt-6 max-w-[500px]">{site.hero.subtitle}</p>
-              <div className="flex flex-wrap gap-3 mt-6">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-3 mt-6">
                 <Link
                   to="/catalogo"
-                  className="inline-flex h-12 items-center gap-2.5 rounded-lg bg-connect px-5 text-sm font-semibold text-white no-underline"
+                  className="inline-flex h-12 items-center justify-center gap-2.5 rounded-lg bg-connect px-5 text-sm font-semibold text-white no-underline w-full sm:w-auto"
                 >
                   <ArrowOutward sx={{ fontSize: 20 }} />
                   {site.hero.primaryCta}
                 </Link>
                 <a
                   href={site.whatsappLink}
-                  className="inline-flex h-12 items-center rounded-lg border border-mist/40 bg-night px-5 text-sm font-semibold text-white no-underline"
+                  className="inline-flex h-12 items-center justify-center rounded-lg border border-mist/40 bg-night px-5 text-sm font-semibold text-white no-underline w-full sm:w-auto"
                 >
                   {site.hero.secondaryCta}
                 </a>
@@ -103,10 +103,10 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="px-6 lg:px-[72px] py-16 grid gap-14 bg-page">
+        <section className="px-4 sm:px-6 lg:px-[72px] py-10 sm:py-16 grid gap-14 bg-page">
           <div>
             <p className="text-connect text-[11px] font-bold">{site.categories.kicker}</p>
-            <h2 className="text-[34px] font-bold mt-2">{site.categories.title}</h2>
+            <h2 className="text-[26px] sm:text-[34px] font-bold mt-2">{site.categories.title}</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-6">
               {site.categories.items.map((item, index) => {
                 const Icon = categoryIcons[index] || Smartphone;
@@ -129,7 +129,7 @@ export default function Home() {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <div>
                 <p className="text-connect text-[11px] font-bold">{site.featured.kicker}</p>
-                <h2 className="text-[34px] font-bold mt-2">{site.featured.title}</h2>
+                <h2 className="text-[26px] sm:text-[34px] font-bold mt-2">{site.featured.title}</h2>
                 <p className="text-mute mt-2">{site.featured.subtitle}</p>
               </div>
               <Link to="/catalogo" className="h-[38px] px-3.5 rounded-lg border border-border text-xs font-semibold text-ink inline-flex items-center no-underline">

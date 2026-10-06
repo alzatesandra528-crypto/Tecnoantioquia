@@ -8,13 +8,13 @@ export default function BrandMark({ inverted = false, to = "/" }) {
   const fallback = inverted ? logoLight : logoDark;
   const src = inverted ? site.logoLight || fallback : site.logoDark || site.logoLight || fallback;
   return (
-    <Link to={to} className="flex items-center gap-2 no-underline" aria-label={`${site.brandName} inicio`}>
-      <img src={src} alt="" width="44" height="44" className="h-11 w-11 object-contain" />
-      <span className="leading-none">
-        <span className={`block font-extrabold text-[23px] ${inverted ? "text-white" : "text-ink"}`}>
+    <Link to={to} className="flex items-center gap-2 no-underline min-w-0" aria-label={`${site.brandName} inicio`}>
+      <img src={src} alt="" width="44" height="44" className="h-9 w-9 sm:h-11 sm:w-11 object-contain shrink-0" />
+      <span className="leading-none min-w-0">
+        <span className={`block font-extrabold text-[17px] sm:text-[20px] md:text-[23px] truncate ${inverted ? "text-white" : "text-ink"}`}>
           {site.brandName}
         </span>
-        <span className={`block text-[10px] ${inverted ? "text-mist" : "text-mute"}`}>
+        <span className={`hidden sm:block text-[10px] truncate ${inverted ? "text-mist" : "text-mute"}`}>
           {site.tagline}
         </span>
       </span>
