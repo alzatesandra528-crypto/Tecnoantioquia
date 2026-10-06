@@ -41,6 +41,12 @@ Mismo dominio: https://tecnoantioquia.vercel.app
 
 En el proyecto (repo https://github.com/alzatesandra528-crypto/Tecnoantioquia ):
 
-- **Root Directory:** `frontend`
-- Apaga Override de Install, Build y Output
-- Variables: `MONGODB_URI` y `JWT_SECRET`
+1. https://vercel.com → proyecto **tecnoantioquia** → **Settings** → **Environment Variables**
+2. Agrega (Production, Preview y Development):
+   - `MONGODB_URI` = la cadena de Atlas (la misma de `backend/.env`)
+   - `JWT_SECRET` = una clave secreta, por ejemplo `tecnoantioquia-secreto`
+3. **Root Directory:** `frontend`
+4. En [MongoDB Atlas](https://cloud.mongodb.com) → Network Access → permite `0.0.0.0/0`
+5. **Deployments** → Redeploy del último despliegue
+
+Vercel no usa `backend/.env`; esas variables hay que pegarlas en el panel.

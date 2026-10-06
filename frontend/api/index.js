@@ -63,10 +63,12 @@ export default async function handler(req, res) {
     }
 
     let dbOk = false;
+    let dbError = "";
     try {
       await connectDb();
       dbOk = true;
     } catch (error) {
+      dbError = error.message;
       console.error("MongoDB:", error.message);
     }
 
@@ -98,7 +100,11 @@ export default async function handler(req, res) {
     }
 
     if (req.method === "POST" && url === "/api/auth/login") {
-      if (!dbOk) return json(res, 503, { error: "Falta conexión a MongoDB (MONGODB_URI)." });
+      if (!dbOk) {
+        return json(res, 503, {
+          error: dbError || "Falta conexión a MongoDB. En Vercel agrega MONGODB_URI y JWT_SECRET."
+        });
+      }
       const body = await readBody(req);
       const username = String(body.username || "").trim();
       const password = String(body.password || "");
@@ -122,7 +128,11 @@ export default async function handler(req, res) {
 
     if (url === "/api/products" && req.method === "GET") {
       readUser(req);
-      if (!dbOk) return json(res, 503, { error: "Falta conexión a MongoDB (MONGODB_URI)." });
+      if (!dbOk) {
+        return json(res, 503, {
+          error: dbError || "Falta conexión a MongoDB. En Vercel agrega MONGODB_URI y JWT_SECRET."
+        });
+      }
       return json(res, 200, await Product.find().sort({ name: 1 }));
     }
 
