@@ -1,16 +1,15 @@
 import { Link } from "react-router-dom";
 import BrandMark from "./BrandMark.jsx";
-import { WHATSAPP_DISPLAY, WHATSAPP_LINK } from "../store.js";
+import { useSite } from "../site.jsx";
 
 export default function StoreFooter() {
+  const { site } = useSite();
   return (
     <footer className="bg-night text-mist px-6 lg:px-[72px] py-10">
       <div className="flex flex-col lg:flex-row justify-between gap-10">
         <div className="max-w-[350px]">
           <BrandMark inverted />
-          <p className="text-[13px] mt-[18px]">
-            Tecnología para tu día a día. Te ayudamos a encontrar lo que necesitas.
-          </p>
+          <p className="text-[13px] mt-[18px]">{site.footer.text}</p>
         </div>
         <div>
           <p className="text-white font-bold text-[15px] mb-2.5">Explora</p>
@@ -27,16 +26,16 @@ export default function StoreFooter() {
         </div>
         <div>
           <p className="text-white font-bold text-[15px]">Conversemos por WhatsApp</p>
-          <a href={WHATSAPP_LINK} className="block text-signal font-bold text-xl mt-2.5 no-underline">
-            {WHATSAPP_DISPLAY}
+          <a href={site.whatsappLink} className="block text-signal font-bold text-xl mt-2.5 no-underline">
+            {site.whatsappDisplay}
           </a>
           <p className="text-xs mt-2.5">Consulta disponibilidad y opciones de compra.</p>
         </div>
       </div>
-      <div className="h-px bg-[#303753] my-8" />
+      <div className="h-px bg-border my-8 opacity-40" />
       <div className="flex flex-col md:flex-row justify-between gap-2 text-[11px]">
-        <p>© 2026 Tecnoantioquia · Tecnología que te conecta</p>
-        <p>Catálogo de demostración. Precios y stock de muestra en COP.</p>
+        <p>{site.footer.legal}</p>
+        <p>{site.featured.disclaimer}</p>
       </div>
     </footer>
   );

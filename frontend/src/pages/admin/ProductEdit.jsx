@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Alert, Button, Switch, TextField } from "@mui/material";
 import { api, getUser, money, profitOf } from "../../api.js";
+import ImageCarousel from "../../components/ImageCarousel.jsx";
+import { compressImage, MAX_PRODUCT_IMAGES } from "../../imageUpload.js";
 
 const empty = {
   name: "",
@@ -18,7 +20,7 @@ const empty = {
 export default function ProductEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const isNew = id === "nuevo";
+  const isNew = !id || id === "nuevo";
   const [form, setForm] = useState(empty);
   const [message, setMessage] = useState("");
   const profit = profitOf(form);
@@ -28,7 +30,7 @@ export default function ProductEdit() {
     if (!isNew) {
       api("/api/products").then((products) => {
         const found = products.find((item) => item._id === id);
-        if (found) setForm({ ...empty, ...found });
+        if (found) setForm({ ...empty, ...found, images: found.images || [] });
       });
     }
   }, [id, isNew]);
@@ -37,13 +39,54 @@ export default function ProductEdit() {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
+  async function onImages(event) {
+    const files = [...(event.target.files || [])];
+    event.target.value = "";
+    const remaining = MAX_PRODUCT_IMAGES - (form.images?.length || 0);
+    if (remaining <= 0) {
+      setMessage(`Puedes subir hasta ${MAX_PRODUCT_IMAGES} fotos para el carrusel.`);
+      return;
+    }
+    try {
+      const next = await Promise.all(files.slice(0, remaining).map((file) => compressImage(file)));
+      setForm((current) => ({ ...current, images: [...(current.images || []), ...next] }));
+    } catch (error) {
+      setMessage(error.message);
+    }
+  }
+
+  function removeImage(index) {
+    setForm((current) => ({
+      ...current,
+      images: current.images.filter((_, i) => i !== index)
+    }));
+  }
+
+  function moveImage(index, direction) {
+    setForm((current) => {
+      const images = [...current.images];
+      const next = index + direction;
+      if (next < 0 || next >= images.length) return current;
+      [images[index], images[next]] = [images[next], images[index]];
+      return { ...current, images };
+    });
+  }
+
   async function save() {
     setMessage("");
     const payload = {
-      ...form,
+      name: form.name,
+      sku: form.sku,
+      category: form.category,
+      description: form.description,
       cost: Number(form.cost),
       price: Number(form.price),
-      stock: Number(form.stock)
+      stock: Number(form.stock),
+      images: form.images || [],
+      published: Boolean(form.published),
+      subtitle: form.subtitle || "",
+      specs: form.specs || {},
+      variants: form.variants || []
     };
     try {
       if (isNew) {
@@ -97,6 +140,35 @@ export default function ProductEdit() {
               multiline
               minRows={4}
             />
+          </section>
+          <section className="bg-white rounded-2xl p-6 grid gap-4">
+            <h2 className="font-extrabold">Fotos del carrusel</h2>
+            <p className="text-sm text-mute">
+              Sube hasta {MAX_PRODUCT_IMAGES} imágenes. Se muestran en el producto como carrusel.
+            </p>
+            <label className="inline-flex">
+              <input type="file" accept="image/*" multiple className="hidden" onChange={onImages} />
+              <span className="inline-flex h-11 items-center rounded-xl bg-connect px-4 text-sm font-semibold text-white cursor-pointer">
+                Subir imágenes
+              </span>
+            </label>
+            {form.images?.length > 0 && (
+              <div className="h-[280px] rounded-2xl overflow-hidden bg-fog">
+                <ImageCarousel images={form.images} alt={form.name || "Producto"} className="h-full" />
+              </div>
+            )}
+            <div className="flex flex-wrap gap-3">
+              {form.images?.map((src, index) => (
+                <div key={`${index}-${src.slice(-12)}`} className="relative">
+                  <img src={src} alt="" className="h-20 w-20 rounded-xl object-cover border border-[#e3e6f0]" />
+                  <div className="flex justify-center gap-1 mt-1">
+                    <button type="button" className="text-xs text-mute" onClick={() => moveImage(index, -1)}>←</button>
+                    <button type="button" className="text-xs text-red-600" onClick={() => removeImage(index)}>Quitar</button>
+                    <button type="button" className="text-xs text-mute" onClick={() => moveImage(index, 1)}>→</button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </section>
           <section className="bg-white rounded-2xl p-6 grid md:grid-cols-2 gap-4">
             <h2 className="font-extrabold md:col-span-2">Precios y ganancia</h2>

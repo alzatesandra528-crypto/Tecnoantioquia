@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg"],
       manifest: {
-        name: "tecnoantioquia",
-        short_name: "tecnoantioquia",
+        name: "Tecnoantioquia",
+        short_name: "Tecnoantioquia",
         description: "Tecnología que te conecta",
         theme_color: "#0B102A",
         background_color: "#F5F6FA",

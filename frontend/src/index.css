@@ -2,14 +2,48 @@
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --color-night: #0b102a;
-  --color-connect: #305bff;
-  --color-impulse: #753ef2;
-  --color-signal: #52ddf5;
-  --color-fog: #f5f6fa;
-  --color-ink: #14182c;
-  --color-mute: #687089;
-  --color-mist: #b9c3e3;
+  --color-night: var(--site-night);
+  --color-connect: var(--site-connect);
+  --color-impulse: var(--site-impulse);
+  --color-signal: var(--site-signal);
+  --color-fog: var(--site-fog);
+  --color-ink: var(--site-ink);
+  --color-mute: var(--site-mute);
+  --color-mist: var(--site-mist);
+  --color-page: var(--site-page);
+  --color-card: var(--site-card);
+  --color-border: var(--site-border);
+}
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --site-night: #0b102a;
+  --site-connect: #305bff;
+  --site-impulse: #753ef2;
+  --site-signal: #1aa7c2;
+  --site-fog: #f5f6fa;
+  --site-ink: #14182c;
+  --site-mute: #5c657e;
+  --site-mist: #b9c3e3;
+  --site-page: #ffffff;
+  --site-card: #ffffff;
+  --site-border: #d5dae8;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --site-night: #070b1c;
+  --site-connect: #6b8cff;
+  --site-impulse: #a78bfa;
+  --site-signal: #7ee7f7;
+  --site-fog: #121738;
+  --site-ink: #f4f6ff;
+  --site-mute: #c5cce0;
+  --site-mist: #c5cce0;
+  --site-page: #0b102a;
+  --site-card: #151b3a;
+  --site-border: #303753;
 }
 
 html,
@@ -21,6 +55,37 @@ body,
 body {
   margin: 0;
   font-family: Inter, sans-serif;
-  background: #f5f6fa;
-  color: #14182c;
+  background: var(--site-page);
+  color: var(--site-ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--site-connect);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  z-index: 100;
+  background: var(--site-connect);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import BrandMark from "../../components/BrandMark.jsx";
+import ThemeToggle from "../../components/ThemeToggle.jsx";
 import { useAuth } from "../../auth.jsx";
 
 export default function AdminLayout() {
@@ -10,7 +11,7 @@ export default function AdminLayout() {
   const links = [
     { to: "/admin", label: "Catálogo", end: true },
     { to: "/admin/ventas", label: "Ventas" },
-    ...(isAdmin ? [{ to: "/admin/vendedores", label: "Vendedores" }] : [])
+    ...(isAdmin ? [{ to: "/admin/vendedores", label: "Vendedores" }, { to: "/admin/landing", label: "Landing y marca" }] : [])
   ];
 
   function logout() {
@@ -19,7 +20,7 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen grid md:grid-cols-[244px_1fr]">
+    <div className="min-h-screen grid md:grid-cols-[244px_1fr] bg-page text-ink">
       <aside className="bg-night text-white p-6 flex flex-col gap-6">
         <BrandMark inverted />
         <p className="text-[10px] tracking-widest text-mist">
@@ -47,11 +48,14 @@ export default function AdminLayout() {
         <Link to="/" className="rounded-xl border border-white/20 px-3 py-2 text-sm text-center">
           Ver tienda
         </Link>
-        <button onClick={logout} className="text-left text-sm text-mist">
-          Cerrar sesión
-        </button>
+        <div className="flex items-center justify-between text-white">
+          <ThemeToggle />
+          <button onClick={logout} className="text-left text-sm text-mist">
+            Cerrar sesión
+          </button>
+        </div>
       </aside>
-      <section className="bg-fog min-h-screen">
+      <section id="contenido" className="bg-fog min-h-screen">
         <Outlet />
       </section>
     </div>

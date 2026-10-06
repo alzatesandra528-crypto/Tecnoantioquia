@@ -6,8 +6,10 @@ import { User } from "./models/User.js";
 import { Product } from "./models/Product.js";
 import { Sale } from "./models/Sale.js";
 import { Order } from "./models/Order.js";
+import { Site } from "./models/Site.js";
 import { authRequired, adminOnly, staffOnly } from "./middleware/auth.js";
 import { connectDb } from "./db.js";
+import { mergeSite } from "./siteDefaults.js";
 
 function tokenFor(user) {
   return jwt.sign(
@@ -33,7 +35,7 @@ export function createApp() {
       ]
     })
   );
-  app.use(express.json());
+  app.use(express.json({ limit: "8mb" }));
 
   app.use(async (_req, _res, next) => {
     try {
@@ -48,6 +50,21 @@ export function createApp() {
     res.json({ ok: true, database: "mongodb" });
   });
 
+  app.get("/api/site", async (_req, res) => {
+    const doc = await Site.findOne({ key: "landing" });
+    res.json(mergeSite(doc?.data));
+  });
+
+  app.put("/api/site", authRequired, adminOnly, async (req, res) => {
+    const merged = mergeSite(req.body || {});
+    const doc = await Site.findOneAndUpdate(
+      { key: "landing" },
+      { data: merged },
+      { upsert: true, new: true }
+    );
+    res.json(mergeSite(doc.data));
+  });
+
   app.post("/api/auth/login", async (req, res) => {
     const username = String(req.body.username || "").trim().toLowerCase();
     const password = String(req.body.password || "");
@@ -58,6 +75,9 @@ export function createApp() {
     const user = await User.findOne({ username });
     if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
       return res.status(401).json({ error: "Credenciales incorrectas." });
+    }
+    if (user.active === false) {
+      return res.status(403).json({ error: "Esta cuenta está desactivada." });
     }
 
     const token = tokenFor(user);
@@ -92,7 +112,7 @@ export function createApp() {
 
   app.get("/api/users", authRequired, adminOnly, async (_req, res) => {
     const users = await User.find({ role: { $in: ["admin", "vendedor"] } })
-      .select("username role name createdAt")
+      .select("username role name active createdAt")
       .sort({ createdAt: -1 });
     res.json(users);
   });
@@ -118,6 +138,34 @@ export function createApp() {
       }
       res.status(400).json({ error: "No se pudo crear el vendedor." });
     }
+  });
+
+  app.put("/api/users/:id", authRequired, adminOnly, async (req, res) => {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado." });
+    if (user.role === "admin" && String(user.id) === String(req.user.id) && req.body.active === false) {
+      return res.status(400).json({ error: "No puedes desactivar tu propia cuenta." });
+    }
+    if (req.body.name !== undefined) user.name = String(req.body.name).trim();
+    if (req.body.username) user.username = String(req.body.username).trim().toLowerCase();
+    if (req.body.active !== undefined) user.active = Boolean(req.body.active);
+    if (req.body.password) user.passwordHash = await bcrypt.hash(String(req.body.password), 10);
+    try {
+      await user.save();
+      res.json({ id: user.id, username: user.username, role: user.role, name: user.name, active: user.active });
+    } catch (error) {
+      if (error.code === 11000) return res.status(409).json({ error: "Ese usuario ya existe." });
+      res.status(400).json({ error: "No se pudo actualizar el usuario." });
+    }
+  });
+
+  app.delete("/api/users/:id", authRequired, adminOnly, async (req, res) => {
+    if (String(req.params.id) === String(req.user.id)) {
+      return res.status(400).json({ error: "No puedes eliminar tu propia cuenta." });
+    }
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado." });
+    res.status(204).end();
   });
 
   app.get("/api/catalog", async (_req, res) => {

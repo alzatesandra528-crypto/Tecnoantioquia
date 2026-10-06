@@ -12,6 +12,7 @@ import CatalogAdmin from "./pages/admin/CatalogAdmin.jsx";
 import ProductEdit from "./pages/admin/ProductEdit.jsx";
 import SalesAdmin from "./pages/admin/SalesAdmin.jsx";
 import SellersAdmin from "./pages/admin/SellersAdmin.jsx";
+import LandingAdmin from "./pages/admin/LandingAdmin.jsx";
 import { useAuth } from "./auth.jsx";
 
 function AdminOnly({ children }) {
@@ -22,6 +23,9 @@ function AdminOnly({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <a className="skip-link" href="#contenido">
+        Saltar al contenido
+      </a>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/catalogo" element={<Catalog />} />
@@ -53,6 +57,14 @@ export default function App() {
             element={
               <AdminOnly>
                 <SellersAdmin />
+              </AdminOnly>
+            }
+          />
+          <Route
+            path="landing"
+            element={
+              <AdminOnly>
+                <LandingAdmin />
               </AdminOnly>
             }
           />

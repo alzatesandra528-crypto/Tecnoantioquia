@@ -8,6 +8,7 @@ import { api, money } from "../api.js";
 import { useCart } from "../cart.jsx";
 import { WHATSAPP_DISPLAY, isAvailable, productSubtitle, whatsappHref } from "../store.js";
 import { productImages } from "../catalogImages.js";
+import ImageCarousel from "../components/ImageCarousel.jsx";
 
 export default function Product() {
   const { id } = useParams();
@@ -57,9 +58,9 @@ export default function Product() {
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-page text-ink">
       <StoreHeader />
-      <main className="px-6 lg:px-[72px] py-8">
+      <main id="contenido" className="px-6 lg:px-[72px] py-8">
         <p className="text-xs text-mute">
           <Link to="/" className="text-mute no-underline">Inicio</Link>
           {" / "}
@@ -70,24 +71,32 @@ export default function Product() {
 
         <div className="grid lg:grid-cols-2 gap-10 mt-6">
           <div>
-            <div className="relative bg-fog rounded-[24px] p-6 min-h-[420px] flex items-center justify-center">
-              <span className="absolute left-5 top-5 rounded-full bg-white px-3 py-1 text-xs text-mute">
+            <div className="relative bg-fog rounded-[24px] min-h-[420px] overflow-hidden">
+              <span className="absolute left-5 top-5 z-10 rounded-full bg-white px-3 py-1 text-xs text-mute">
                 {product.category}{variant?.color ? ` · ${variant.color.split(" ")[0]}` : ""}
               </span>
-              <img src={images[imageIndex]} alt={product.name} className="max-h-[360px] object-contain" />
+              <ImageCarousel
+                images={images}
+                alt={product.name}
+                className="h-[420px] p-6"
+                index={imageIndex}
+                onIndexChange={setImageIndex}
+              />
             </div>
-            <div className="flex gap-3 mt-4">
-              {images.map((src, index) => (
-                <button
-                  key={src}
-                  type="button"
-                  onClick={() => setImageIndex(index)}
-                  className={`h-20 w-20 rounded-xl overflow-hidden border ${index === imageIndex ? "border-connect" : "border-[#e3e6f0]"}`}
-                >
-                  <img src={src} alt="" className="h-full w-full object-cover" />
-                </button>
-              ))}
-            </div>
+            {images.length > 1 && (
+              <div className="flex gap-3 mt-4 overflow-x-auto">
+                {images.map((src, index) => (
+                  <button
+                    key={`${index}-${src.slice(-16)}`}
+                    type="button"
+                    onClick={() => setImageIndex(index)}
+                    className={`h-20 w-20 shrink-0 rounded-xl overflow-hidden border ${index === imageIndex ? "border-connect" : "border-[#e3e6f0]"}`}
+                  >
+                    <img src={src} alt="" className="h-full w-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
             <p className="text-[11px] text-mute mt-3">Fotografías ilustrativas · Producto y precio de demostración.</p>
           </div>
 

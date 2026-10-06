@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tecnoantioquia.vercel.app/sitemap.xml

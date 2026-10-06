@@ -6,6 +6,8 @@ import { User } from "../../backend/src/models/User.js";
 import { Sale } from "../../backend/src/models/Sale.js";
 import { Order } from "../../backend/src/models/Order.js";
 import { demoCatalog } from "../../backend/src/seed.js";
+import { Site } from "../../backend/src/models/Site.js";
+import { defaultSite, mergeSite } from "../../backend/src/siteDefaults.js";
 
 function json(res, status, data) {
   res.statusCode = status;
@@ -77,6 +79,20 @@ export default async function handler(req, res) {
       return json(res, 200, { ok: true, database: dbOk ? "mongodb" : "demo" });
     }
 
+    if (req.method === "GET" && url === "/api/site") {
+      if (!dbOk) return json(res, 200, defaultSite);
+      const doc = await Site.findOne({ key: "landing" });
+      return json(res, 200, mergeSite(doc?.data));
+    }
+
+    if (req.method === "PUT" && url === "/api/site") {
+      const auth = readUser(req);
+      if (auth.role !== "admin") throw Object.assign(new Error("Solo la administradora puede editar la tienda."), { status: 403 });
+      const merged = mergeSite(await readBody(req));
+      const doc = await Site.findOneAndUpdate({ key: "landing" }, { data: merged }, { upsert: true, new: true });
+      return json(res, 200, mergeSite(doc.data));
+    }
+
     if (req.method === "GET" && url === "/api/catalog") {
       if (!dbOk) return json(res, 200, demoProducts());
       const products = await Product.find({ published: true }).select("-cost").sort({ name: 1 });
@@ -115,6 +131,9 @@ export default async function handler(req, res) {
       const user = await User.findOne({ username });
       if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
         return json(res, 401, { error: "Credenciales incorrectas." });
+      }
+      if (user.active === false) {
+        return json(res, 403, { error: "Esta cuenta está desactivada." });
       }
       const token = jwt.sign(
         { id: user.id, username: user.username, role: user.role, name: user.name || "" },
@@ -172,7 +191,7 @@ export default async function handler(req, res) {
         return json(res, 503, { error: dbError || "Falta conexión a MongoDB." });
       }
       const users = await User.find({ role: { $in: ["admin", "vendedor"] } })
-        .select("username role name createdAt")
+        .select("username role name active createdAt")
         .sort({ createdAt: -1 });
       return json(res, 200, users);
     }
@@ -199,6 +218,41 @@ export default async function handler(req, res) {
         if (error.code === 11000) return json(res, 409, { error: "Ese usuario ya existe." });
         return json(res, 400, { error: "No se pudo crear el vendedor." });
       }
+    }
+
+    const userId = url.match(/^\/api\/users\/([^/]+)$/);
+    if (userId && req.method === "PUT") {
+      const auth = readUser(req);
+      if (auth.role !== "admin") throw Object.assign(new Error("Solo la administradora puede editar el equipo."), { status: 403 });
+      const user = await User.findById(userId[1]);
+      if (!user) return json(res, 404, { error: "Usuario no encontrado." });
+      const body = await readBody(req);
+      if (user.role === "admin" && String(user.id) === String(auth.id) && body.active === false) {
+        return json(res, 400, { error: "No puedes desactivar tu propia cuenta." });
+      }
+      if (body.name !== undefined) user.name = String(body.name).trim();
+      if (body.username) user.username = String(body.username).trim().toLowerCase();
+      if (body.active !== undefined) user.active = Boolean(body.active);
+      if (body.password) user.passwordHash = await bcrypt.hash(String(body.password), 10);
+      try {
+        await user.save();
+        return json(res, 200, { id: user.id, username: user.username, role: user.role, name: user.name, active: user.active });
+      } catch (error) {
+        if (error.code === 11000) return json(res, 409, { error: "Ese usuario ya existe." });
+        return json(res, 400, { error: "No se pudo actualizar el usuario." });
+      }
+    }
+
+    if (userId && req.method === "DELETE") {
+      const auth = readUser(req);
+      if (auth.role !== "admin") throw Object.assign(new Error("Solo la administradora puede eliminar vendedores."), { status: 403 });
+      if (String(userId[1]) === String(auth.id)) {
+        return json(res, 400, { error: "No puedes eliminar tu propia cuenta." });
+      }
+      const user = await User.findByIdAndDelete(userId[1]);
+      if (!user) return json(res, 404, { error: "Usuario no encontrado." });
+      res.statusCode = 204;
+      return res.end();
     }
 
     if (url === "/api/products" && req.method === "GET") {

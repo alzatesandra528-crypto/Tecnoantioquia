@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, Chip } from "@mui/material";
+import { Button, Chip, IconButton, Tooltip } from "@mui/material";
+import EditOutlined from "@mui/icons-material/EditOutlined";
+import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
+import VisibilityOutlined from "@mui/icons-material/VisibilityOutlined";
+import VisibilityOffOutlined from "@mui/icons-material/VisibilityOffOutlined";
 import { api, getUser, money, profitOf } from "../../api.js";
 
 export default function CatalogAdmin() {
@@ -23,6 +27,14 @@ export default function CatalogAdmin() {
     await load();
   }
 
+  async function togglePublished(product) {
+    await api(`/api/products/${product._id}`, {
+      method: "PUT",
+      body: JSON.stringify({ ...product, published: !product.published })
+    });
+    await load();
+  }
+
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-8 gap-4">
@@ -30,8 +42,8 @@ export default function CatalogAdmin() {
           <h1 className="text-3xl font-extrabold">Tu catálogo, al día.</h1>
           <p className="text-mute">
             {isAdmin
-              ? "Puedes agregar, editar y eliminar productos. La ganancia se calcula con compra y venta."
-              : "Puedes agregar productos nuevos. Editar o eliminar solo lo hace la administradora."}
+              ? "Usa los iconos para editar, desactivar o eliminar. La ganancia se calcula con compra y venta."
+              : "Puedes agregar productos nuevos. Editar, desactivar o eliminar solo lo hace la administradora."}
           </p>
         </div>
         {canAdd && (
@@ -50,7 +62,8 @@ export default function CatalogAdmin() {
               <th>Venta</th>
               {isAdmin && <th>Ganancia</th>}
               <th>Stock</th>
-              <th></th>
+              <th>Estado</th>
+              <th className="text-right pr-4">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -71,15 +84,27 @@ export default function CatalogAdmin() {
                   <td>
                     <Chip size="small" label={product.stock} color={product.stock <= 3 ? "error" : "default"} />
                   </td>
-                  <td className="p-4 text-right whitespace-nowrap">
+                  <td>
+                    <Chip size="small" label={product.published ? "Visible" : "Oculto"} color={product.published ? "success" : "default"} />
+                  </td>
+                  <td className="p-2 text-right whitespace-nowrap">
                     {isAdmin && (
                       <>
-                        <Link className="text-connect font-semibold mr-3" to={`/admin/producto/${product._id}`}>
-                          Editar
-                        </Link>
-                        <button type="button" className="text-red-600 font-semibold" onClick={() => remove(product._id)}>
-                          Eliminar
-                        </button>
+                        <Tooltip title="Editar">
+                          <IconButton color="primary" component={Link} to={`/admin/producto/${product._id}`}>
+                            <EditOutlined />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title={product.published ? "Desactivar" : "Activar"}>
+                          <IconButton color={product.published ? "warning" : "success"} onClick={() => togglePublished(product)}>
+                            {product.published ? <VisibilityOffOutlined /> : <VisibilityOutlined />}
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Eliminar">
+                          <IconButton color="error" onClick={() => remove(product._id)}>
+                            <DeleteOutlined />
+                          </IconButton>
+                        </Tooltip>
                       </>
                     )}
                   </td>

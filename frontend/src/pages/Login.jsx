@@ -37,7 +37,7 @@ export default function Login() {
 
   return (
     <main className="min-h-screen bg-night flex items-center justify-center p-6">
-      <form onSubmit={onSubmit} className="bg-white rounded-3xl p-8 w-full max-w-md">
+      <form onSubmit={onSubmit} className="bg-card rounded-3xl p-8 w-full max-w-md text-ink">
         <BrandMark />
         <h1 className="text-2xl font-extrabold mt-6">Iniciar sesión</h1>
         <p className="text-mute mb-6">Clientes, vendedores y administración.</p>

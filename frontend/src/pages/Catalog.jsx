@@ -59,9 +59,9 @@ export default function Catalog() {
     });
 
   return (
-    <div className="bg-fog min-h-screen">
+    <div className="bg-fog min-h-screen text-ink">
       <StoreHeader />
-      <main className="px-6 lg:px-[72px] py-10">
+      <main id="contenido" className="px-6 lg:px-[72px] py-10">
         <p className="text-xs text-mute">
           <Link to="/" className="text-mute no-underline">Inicio</Link> / Catálogo
         </p>

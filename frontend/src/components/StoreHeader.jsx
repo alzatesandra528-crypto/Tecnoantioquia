@@ -1,9 +1,10 @@
 import { Link, NavLink } from "react-router-dom";
 import ChatBubbleOutlined from "@mui/icons-material/ChatBubbleOutlined";
 import BrandMark from "./BrandMark.jsx";
-import { WHATSAPP_DISPLAY, WHATSAPP_LINK } from "../store.js";
+import ThemeToggle from "./ThemeToggle.jsx";
 import { homeFor, useAuth } from "../auth.jsx";
 import { useCart } from "../cart.jsx";
+import { useSite } from "../site.jsx";
 
 const links = [
   { to: "/", label: "Inicio", end: true },
@@ -16,18 +17,19 @@ const links = [
 export default function StoreHeader() {
   const auth = useAuth();
   const cart = useCart();
+  const { site } = useSite();
 
   return (
     <header>
       <div className="bg-night h-8 px-6 lg:px-[72px] flex items-center justify-between text-[11px]">
-        <span className="text-mist">Celulares · Accesorios · Recargas · Servicio técnico</span>
-        <a href={WHATSAPP_LINK} className="text-white no-underline">
-          Hablemos: {WHATSAPP_DISPLAY}
+        <span className="text-mist">{site.headerNote}</span>
+        <a href={site.whatsappLink} className="text-white no-underline">
+          Hablemos: {site.whatsappDisplay}
         </a>
       </div>
-      <div className="bg-white h-[88px] px-6 lg:px-[72px] flex items-center justify-between gap-4">
+      <div className="bg-card border-b border-border h-[88px] px-6 lg:px-[72px] flex items-center justify-between gap-4">
         <BrandMark />
-        <nav className="hidden md:flex items-center gap-[26px] text-sm">
+        <nav className="hidden md:flex items-center gap-[26px] text-sm" aria-label="Principal">
           {links.map((link) =>
             link.hash ? (
               <a key={link.label} href={link.to} className="font-medium text-mute no-underline">
@@ -47,7 +49,8 @@ export default function StoreHeader() {
             )
           )}
         </nav>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 text-ink">
+          <ThemeToggle />
           <Link to="/carrito" className="text-xs font-semibold text-ink no-underline">
             Carrito ({cart.count})
           </Link>
@@ -66,7 +69,7 @@ export default function StoreHeader() {
             </>
           )}
           <a
-            href={WHATSAPP_LINK}
+            href={site.whatsappLink}
             className="inline-flex h-[38px] items-center gap-2.5 rounded-lg bg-connect px-3.5 text-xs font-semibold text-white no-underline"
           >
             <ChatBubbleOutlined sx={{ fontSize: 20 }} />
