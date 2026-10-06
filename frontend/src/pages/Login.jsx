@@ -31,17 +31,22 @@ export default function Login() {
     <main className="min-h-screen bg-night flex items-center justify-center p-6">
       <form onSubmit={onSubmit} className="bg-white rounded-3xl p-8 w-full max-w-md">
         <BrandMark />
-        <h1 className="text-2xl font-extrabold mt-6">Control de inventario</h1>
-        <p className="text-mute mb-6">Administrador o vendedor</p>
+        <h1 className="text-2xl font-extrabold mt-6">Entrar como administradora</h1>
+        <p className="text-mute mb-6">Desde aquí agregas productos, precios de compra/venta y ves la ganancia.</p>
         <div className="grid gap-4">
-          <TextField name="username" label="Usuario" fullWidth required />
-          <TextField name="password" label="Contraseña" type="password" fullWidth required />
+          <TextField name="username" label="Usuario" defaultValue="admin" fullWidth required />
+          <TextField name="password" label="Contraseña" type="password" defaultValue="admin123" fullWidth required />
           {error && <Alert severity="error">{error}</Alert>}
           <Button type="submit" variant="contained" size="large">Ingresar</Button>
         </div>
-        <p className="text-sm text-mute mt-6">
-          Admin: admin / admin123 · Vendedor: vendedor / vendedor123
-        </p>
+        <div className="text-sm text-mute mt-6 bg-fog rounded-2xl p-4">
+          <p className="font-semibold text-ink">Administradora</p>
+          <p>Usuario: admin</p>
+          <p>Contraseña: admin123</p>
+          <p className="mt-3 font-semibold text-ink">Vendedor</p>
+          <p>Usuario: vendedor</p>
+          <p>Contraseña: vendedor123</p>
+        </div>
         <Link to="/" className="block mt-4 text-connect font-semibold">Volver al sitio</Link>
       </form>
     </main>

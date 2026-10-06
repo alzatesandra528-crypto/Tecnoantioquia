@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import ChatBubbleOutlined from "@mui/icons-material/ChatBubbleOutlined";
 import BrandMark from "./BrandMark.jsx";
 import { WHATSAPP_DISPLAY, WHATSAPP_LINK } from "../store.js";
@@ -42,13 +42,18 @@ export default function StoreHeader() {
             )
           )}
         </nav>
-        <a
-          href={WHATSAPP_LINK}
-          className="inline-flex h-[38px] items-center gap-2.5 rounded-lg bg-connect px-3.5 text-xs font-semibold text-white no-underline"
-        >
-          <ChatBubbleOutlined sx={{ fontSize: 20 }} />
-          Escríbenos
-        </a>
+        <div className="flex items-center gap-3">
+          <Link to="/login" className="hidden sm:inline text-xs font-semibold text-mute no-underline">
+            Inventario
+          </Link>
+          <a
+            href={WHATSAPP_LINK}
+            className="inline-flex h-[38px] items-center gap-2.5 rounded-lg bg-connect px-3.5 text-xs font-semibold text-white no-underline"
+          >
+            <ChatBubbleOutlined sx={{ fontSize: 20 }} />
+            Escríbenos
+          </a>
+        </div>
       </div>
     </header>
   );

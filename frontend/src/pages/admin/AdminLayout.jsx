@@ -36,7 +36,7 @@ export default function AdminLayout() {
           ))}
         </nav>
         <p className="text-xs text-mist bg-white/5 rounded-2xl p-4">
-          Este módulo administra productos y disponibilidad. El vendedor puede registrar ventas, no editar productos.
+          Este módulo administra productos, precios de compra/venta y ganancias. El vendedor puede registrar ventas, no editar productos.
         </p>
         <Link to="/" className="rounded-xl border border-white/20 px-3 py-2 text-sm text-center">
           Ver tienda

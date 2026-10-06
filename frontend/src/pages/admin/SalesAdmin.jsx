@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, MenuItem, TextField } from "@mui/material";
-import { api, money } from "../../api.js";
+import { api, money, profitOf } from "../../api.js";
 
 export default function SalesAdmin() {
   const [sales, setSales] = useState([]);
@@ -49,7 +49,8 @@ export default function SalesAdmin() {
               <th className="p-4">Fecha</th>
               <th>Producto</th>
               <th>Cantidad</th>
-              <th>Total</th>
+              <th>Total venta</th>
+              <th>Ganancia</th>
               <th>Vendedor</th>
             </tr>
           </thead>
@@ -60,6 +61,9 @@ export default function SalesAdmin() {
                 <td>{sale.productId?.name}</td>
                 <td>{sale.quantity}</td>
                 <td>{money.format(sale.quantity * sale.unitPrice)}</td>
+                <td className="font-semibold text-[#177c62]">
+                  {money.format(profitOf(sale, sale.quantity).amount)}
+                </td>
                 <td>{sale.userId?.username}</td>
               </tr>
             ))}

@@ -37,3 +37,11 @@ export const money = new Intl.NumberFormat("es-CO", {
   currency: "COP",
   maximumFractionDigits: 0
 });
+
+export function profitOf(product, quantity = 1) {
+  const sale = Number(product.price ?? product.unitPrice) || 0;
+  const cost = Number(product.cost ?? product.unitCost) || 0;
+  const amount = (sale - cost) * quantity;
+  const percent = sale ? ((sale - cost) / sale) * 100 : 0;
+  return { amount, percent };
+}

@@ -60,12 +60,12 @@ export function createApp() {
   });
 
   app.get("/api/catalog", async (_req, res) => {
-    const products = await Product.find({ published: true }).sort({ name: 1 });
+    const products = await Product.find({ published: true }).select("-cost").sort({ name: 1 });
     res.json(products);
   });
 
   app.get("/api/catalog/:id", async (req, res) => {
-    const product = await Product.findOne({ _id: req.params.id, published: true });
+    const product = await Product.findOne({ _id: req.params.id, published: true }).select("-cost");
     if (!product) {
       return res.status(404).json({ error: "Producto no encontrado." });
     }
@@ -142,6 +142,7 @@ export function createApp() {
       productId: product.id,
       quantity,
       unitPrice: product.price,
+      unitCost: product.cost || 0,
       userId: req.user.id
     });
 

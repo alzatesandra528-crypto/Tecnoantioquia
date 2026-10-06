@@ -108,6 +108,10 @@ export async function seedIfEmpty() {
   }
 
   for (const item of catalog) {
-    await Product.findOneAndUpdate({ sku: item.sku }, item, { upsert: true, returnDocument: "after" });
+    await Product.findOneAndUpdate(
+      { sku: item.sku },
+      { ...item, cost: item.cost ?? Math.round(item.price * 0.72) },
+      { upsert: true, returnDocument: "after" }
+    );
   }
 }

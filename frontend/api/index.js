@@ -16,7 +16,11 @@ function json(res, status, data) {
 }
 
 function demoProducts() {
-  return demoCatalog.map((item) => ({ ...item, _id: item.sku }));
+  return demoCatalog.map((item) => {
+    const product = { ...item, _id: item.sku };
+    delete product.cost;
+    return product;
+  });
 }
 
 async function readBody(req) {
@@ -72,7 +76,7 @@ export default async function handler(req, res) {
 
     if (req.method === "GET" && url === "/api/catalog") {
       if (!dbOk) return json(res, 200, demoProducts());
-      const products = await Product.find({ published: true }).sort({ name: 1 });
+      const products = await Product.find({ published: true }).select("-cost").sort({ name: 1 });
       return json(res, 200, products);
     }
 
@@ -86,7 +90,9 @@ export default async function handler(req, res) {
       const product = await Product.findOne({
         _id: catalogItem[1],
         published: true
-      }).catch(() => null);
+      })
+        .select("-cost")
+        .catch(() => null);
       if (!product) return json(res, 404, { error: "Producto no encontrado." });
       return json(res, 200, product);
     }
@@ -182,6 +188,7 @@ export default async function handler(req, res) {
         productId: product.id,
         quantity,
         unitPrice: product.price,
+        unitCost: product.cost || 0,
         userId: user.id
       });
       return json(res, 201, sale);
