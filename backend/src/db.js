@@ -13,7 +13,7 @@ export async function connectDb() {
   }
   if (!connecting) {
     connecting = mongoose
-      .connect(uri, { serverSelectionTimeoutMS: 20000 })
+      .connect(uri, { serverSelectionTimeoutMS: 8000 })
       .catch((error) => {
         connecting = undefined;
         throw error;

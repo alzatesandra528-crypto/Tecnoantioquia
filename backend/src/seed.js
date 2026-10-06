@@ -88,6 +88,8 @@ const catalog = [
   }
 ];
 
+export const demoCatalog = catalog;
+
 export async function seedIfEmpty() {
   const users = await User.countDocuments();
   if (users === 0) {
