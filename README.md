@@ -1,44 +1,24 @@
 # Tecnoantioquia
 
-Empresa de venta de accesorios, mantenimiento de celulares y equipos de cómputo.
-
-## Estructura
-
-- `frontend/`: sitio público y panel de inventario
-- `backend/`: API Node.js + Express + MySQL
+Sitio y catálogo rediseñados con la identidad de Figma: React + Vite + Material UI + Tailwind + PWA, y MongoDB.
 
 ## Cómo ejecutarlo
 
-1. Entra a `backend/`
-2. Copia `.env.example` a `.env` y completa los datos de MySQL
-3. Instala dependencias: `npm install`
-4. Arranca el servidor: `npm start`
-5. Abre http://localhost:3000
+1. Instala [MongoDB Community](https://www.mongodb.com/try/download/community) o usa Atlas.
+2. En `server/.env` deja `MONGODB_URI` apuntando a tu cluster o a `mongodb://127.0.0.1:27017/tecnoantioquia`.
+3. En la raíz:
 
-## Usuarios iniciales
+```bash
+npm install
+npm install --prefix server
+npm install --prefix client
+npm run dev
+```
 
-- Administrador: `admin` / `admin123` (único que puede crear, editar y eliminar productos)
-- Vendedor: `vendedor` / `vendedor123` (consulta inventario y registra ventas)
+- Tienda: http://localhost:5173
+- API: http://localhost:4000
 
-El pool de MySQL usa 1 conexión para respetar el límite del addon en Clever Cloud.
+## Usuarios
 
-## Despliegue en Vercel
-
-Sitio: https://tecnoantioquia.vercel.app
-
-En Vercel, si el **Root Directory** es `frontend`:
-
-- Build Command: `node scripts/copy-frontend.js`
-- Output Directory: `public`
-- Node.js: 24.x
-
-Variables de entorno:
-
-- `MYSQL_ADDON_HOST`
-- `MYSQL_ADDON_DB`
-- `MYSQL_ADDON_USER`
-- `MYSQL_ADDON_PORT`
-- `MYSQL_ADDON_PASSWORD`
-- `JWT_SECRET`
-
-Vercel sirve el `frontend/` como sitio estático y la API en `/api`.
+- Administrador: `admin` / `admin123` (único que edita productos)
+- Vendedor: `vendedor` / `vendedor123` (consulta y registra ventas)
