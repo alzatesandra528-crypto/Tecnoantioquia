@@ -1,30 +1,54 @@
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import ChatBubbleOutlined from "@mui/icons-material/ChatBubbleOutlined";
 import BrandMark from "./BrandMark.jsx";
+import { WHATSAPP_DISPLAY, WHATSAPP_LINK } from "../store.js";
+
+const links = [
+  { to: "/", label: "Inicio", end: true },
+  { to: "/catalogo", label: "Catálogo" },
+  { to: "/#servicios", label: "Servicios", hash: true },
+  { to: "/#nosotros", label: "Nosotros", hash: true },
+  { to: "/#contacto", label: "Contacto", hash: true }
+];
 
 export default function StoreHeader() {
   return (
     <header>
-      <div className="bg-night text-mist text-xs py-2 px-6 md:px-16 flex justify-between">
-        <span>Cra 52 # 51 - 55, Rionegro · 10:00 AM a 9:00 PM</span>
-        <a href="https://wa.me/573015752454">WhatsApp 301 575 2454</a>
+      <div className="bg-night h-8 px-6 lg:px-[72px] flex items-center justify-between text-[11px]">
+        <span className="text-mist">Celulares · Accesorios · Recargas · Servicio técnico</span>
+        <a href={WHATSAPP_LINK} className="text-white no-underline">
+          Hablemos: {WHATSAPP_DISPLAY}
+        </a>
       </div>
-      <div className="bg-white px-6 md:px-16 py-4 flex items-center justify-between gap-4">
-        <Link to="/">
-          <BrandMark />
-        </Link>
-        <nav className="hidden md:flex gap-6 text-sm font-semibold text-mute">
-          <NavLink to="/catalogo">Catálogo</NavLink>
-          <a href="/#servicios">Servicio técnico</a>
-          <a href="/#contacto">Contacto</a>
+      <div className="bg-white h-[88px] px-6 lg:px-[72px] flex items-center justify-between gap-4">
+        <BrandMark />
+        <nav className="hidden md:flex items-center gap-[26px] text-sm">
+          {links.map((link) =>
+            link.hash ? (
+              <a key={link.label} href={link.to} className="font-medium text-mute no-underline">
+                {link.label}
+              </a>
+            ) : (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.end}
+                className={({ isActive }) =>
+                  `no-underline text-sm ${isActive ? "font-bold text-connect" : "font-medium text-mute"}`
+                }
+              >
+                {link.label}
+              </NavLink>
+            )
+          )}
         </nav>
-        <div className="flex gap-3">
-          <Link to="/catalogo" className="rounded-xl bg-connect text-white px-4 py-2 text-sm font-bold">
-            Ver catálogo
-          </Link>
-          <Link to="/login" className="rounded-xl border border-[#e3e6f0] px-4 py-2 text-sm font-bold text-ink">
-            Inventario
-          </Link>
-        </div>
+        <a
+          href={WHATSAPP_LINK}
+          className="inline-flex h-[38px] items-center gap-2.5 rounded-lg bg-connect px-3.5 text-xs font-semibold text-white no-underline"
+        >
+          <ChatBubbleOutlined sx={{ fontSize: 20 }} />
+          Escríbenos
+        </a>
       </div>
     </header>
   );

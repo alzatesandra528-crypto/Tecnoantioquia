@@ -9,6 +9,8 @@ const productSchema = new mongoose.Schema(
     price: { type: Number, required: true },
     stock: { type: Number, required: true, default: 0 },
     images: { type: [String], default: [] },
+    subtitle: { type: String, default: "" },
+    specs: { type: mongoose.Schema.Types.Mixed, default: {} },
     published: { type: Boolean, default: true },
     variants: [
       {
